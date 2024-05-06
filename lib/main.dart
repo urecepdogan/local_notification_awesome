@@ -1,5 +1,6 @@
-import 'dart:async';
+// ignore_for_file: avoid_print
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:notifications_local/notifications_controller.dart';
@@ -14,6 +15,7 @@ void main() async {
   if (!isAllowedNotification) {
     AwesomeNotifications().requestPermissionToSendNotifications();
   }
+
   runApp(const MyApp());
 }
 
@@ -43,7 +45,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     Timer? timer;
-    int i = 0;
+    int i = 1;
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -59,23 +61,30 @@ class _MyAppState extends State<MyApp> {
               ElevatedButton(
                 onPressed: () {
                   DateTime now = DateTime.now();
-                  i = 1;
+                  print(now);
                   if (now.minute % 2 == 0) {
                     bildirimGonder(i);
                     timer = Timer.periodic(
-                      const Duration(minutes: 2),
+                      const Duration(seconds: 1),
                       (timer) {
-                        bildirimGonder(i);
-                        i++;
+                        DateTime now = DateTime.now();
+                        Text(now.toString());
+                        print(now);
+                        if (now.second == 0 && now.minute.isEven) {
+                          i++;
+                          bildirimGonder(i);
+                        }
                       },
                     );
                   } else {
                     timer = Timer.periodic(
                       const Duration(seconds: 1),
                       (timer) {
-                        if (now.minute % 2 == 0 && now.second == 1) {
+                        DateTime now = DateTime.now();
+
+                        print(now);
+                        if (now.second == 0 && now.minute.isEven) {
                           bildirimGonder(i);
-                          print("bildirim saati $now");
                           i++;
                         }
                       },
@@ -88,7 +97,7 @@ class _MyAppState extends State<MyApp> {
                 onPressed: () {
                   timer?.cancel();
                   AwesomeNotifications().cancelAll();
-                  i = 0;
+                  i = 1;
                 },
                 child: const Text("Bildirimleri Durdur"),
               ),
