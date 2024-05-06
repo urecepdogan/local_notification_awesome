@@ -3,19 +3,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:notifications_local/local_notification_service.dart';
 import 'package:notifications_local/notifications_controller.dart';
 
 void main() async {
-  await AwesomeNotifications().initialize(null, [
-    NotificationChannel(channelKey: 'channel_repeat2', channelName: 'Repeat Notifications', channelDescription: 'Test'),
-  ], channelGroups: [
-    NotificationChannelGroup(channelGroupKey: 'channel_repeat_group', channelGroupName: 'Repeat Notifications Group')
-  ]);
-  bool isAllowedNotification = await AwesomeNotifications().isNotificationAllowed();
-  if (!isAllowedNotification) {
-    AwesomeNotifications().requestPermissionToSendNotifications();
-  }
-
+  await LocalNotificationService.init();
   runApp(const MyApp());
 }
 
@@ -32,14 +24,7 @@ class _MyAppState extends State<MyApp> {
     AwesomeNotifications().setListeners(
       onActionReceivedMethod: NotificationController.onActionReceivedMethod,
     );
-
     super.initState();
-  }
-
-  bildirimGonder(int i) {
-    AwesomeNotifications().createNotification(
-      content: NotificationContent(id: 15, channelKey: 'channel_repeat2', title: '$i. Deneme', body: '$i. Deneme Bildirimi'),
-    );
   }
 
   @override
@@ -63,7 +48,7 @@ class _MyAppState extends State<MyApp> {
                   DateTime now = DateTime.now();
                   print(now);
                   if (now.minute % 2 == 0) {
-                    bildirimGonder(i);
+                    LocalNotificationService.bildirimGonder(i);
                     timer = Timer.periodic(
                       const Duration(seconds: 1),
                       (timer) {
@@ -72,7 +57,7 @@ class _MyAppState extends State<MyApp> {
                         print(now);
                         if (now.second == 0 && now.minute.isEven) {
                           i++;
-                          bildirimGonder(i);
+                          LocalNotificationService.bildirimGonder(i);
                         }
                       },
                     );
@@ -84,7 +69,7 @@ class _MyAppState extends State<MyApp> {
 
                         print(now);
                         if (now.second == 0 && now.minute.isEven) {
-                          bildirimGonder(i);
+                          LocalNotificationService.bildirimGonder(i);
                           i++;
                         }
                       },
